@@ -47,6 +47,13 @@ export const useCartStore = create<CartState>()(
 
       itemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-    { name: 'crumbo-cart' }
+    {
+      name: 'crumbo-cart',
+      storage: {
+        getItem: (name) => { try { const v = localStorage.getItem(name); return v ? JSON.parse(v) : null } catch { return null } },
+        setItem: (name, value) => { try { localStorage.setItem(name, JSON.stringify(value)) } catch {} },
+        removeItem: (name) => { try { localStorage.removeItem(name) } catch {} },
+      },
+    }
   )
 )

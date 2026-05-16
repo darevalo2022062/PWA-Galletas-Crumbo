@@ -34,7 +34,7 @@ export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-crema border-t border-dorado/20 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-crema border-t border-dorado/20" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex items-center justify-around h-16 px-2">
         {links.map(({ href, label, icon }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href))

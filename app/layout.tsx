@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -13,6 +13,14 @@ export const metadata: Metadata = {
   title: "Crumbo — Galletas que enamoran",
   description: "Personaliza tus galletas y cajas para cualquier ocasión especial. Entrega en Guatemala.",
   keywords: "galletas personalizadas, galletas Guatemala, regalo galletas, Crumbo",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
