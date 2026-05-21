@@ -11,8 +11,10 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Crumbo — Galletas que enamoran",
-  description: "Personaliza tus galletas y cajas para cualquier ocasión especial. Entrega en Guatemala.",
-  keywords: "galletas personalizadas, galletas Guatemala, regalo galletas, Crumbo",
+  description:
+    "Personaliza tus galletas y cajas para cualquier ocasión especial. Entrega en Guatemala.",
+  keywords:
+    "galletas personalizadas, galletas Guatemala, regalo galletas, Crumbo",
 };
 
 export const viewport: Viewport = {
