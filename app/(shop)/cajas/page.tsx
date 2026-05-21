@@ -69,7 +69,7 @@ export default function CajasPage() {
         {/* Vista 3D de la caja */}
         <div className="md:sticky md:top-24">
           <div className="bg-gradient-to-b from-cafe to-cafe-medio rounded-3xl p-4 md:p-6">
-            <BoxScene color={boxColor} ribbonColor={ribbonColor} interactive />
+            <BoxScene interactive />
             <div className="mt-4 text-center">
               <p className="font-display text-2xl font-bold text-dorado">{formatPrice(boxOption.price)}</p>
               <p className="text-crema/60 text-xs">{boxOption.desc}</p>
