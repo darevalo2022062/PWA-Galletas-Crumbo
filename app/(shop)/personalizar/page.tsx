@@ -101,7 +101,12 @@ export default function PersonalizarPage() {
         {/* Vista 3D */}
         <div className="md:sticky md:top-24">
           <div className="bg-gradient-to-b from-cafe to-cafe-medio rounded-3xl p-4 md:p-6">
-            <CookieScene size="lg" interactive />
+            <CookieScene
+              cookieColor={selectedFlavor?.color}
+              toppingColor={selectedTopping?.color}
+              chipColor={selectedTopping?.color}
+              size="lg"
+            />
             <div className="mt-4 text-center">
               <p className="font-display text-2xl font-bold text-dorado">{formatPrice(unitPrice)}</p>
               <p className="text-crema/60 text-xs">por galleta · total: {formatPrice(totalPrice)}</p>

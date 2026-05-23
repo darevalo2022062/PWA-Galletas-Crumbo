@@ -12,11 +12,11 @@ const BoxScene = dynamic(() => import('@/components/3d/BoxScene'), {
   loading: () => <div className="w-full h-64 bg-gris-suave rounded-3xl animate-pulse" />,
 })
 
-const BOX_OPTIONS: { type: BoxType; label: string; emoji: string; price: number; desc: string; count: number }[] = [
-  { type: 'individual', label: 'Caja Individual', emoji: '🎁', price: 45, desc: '1 galleta personalizada', count: 1 },
-  { type: 'x6', label: 'Caja x6', emoji: '📦', price: 220, desc: '6 galletas a tu elección', count: 6 },
-  { type: 'x12', label: 'Caja x12', emoji: '🎀', price: 420, desc: '12 galletas — el regalo perfecto', count: 12 },
-  { type: 'surprise', label: 'Caja Sorpresa', emoji: '✨', price: 180, desc: 'Nosotros elegimos lo mejor para vos', count: 0 },
+const BOX_OPTIONS: { type: BoxType; label: string; emoji: string; price: number; desc: string; count: number; boxSize: 'x6' | 'x12' | 'x24' }[] = [
+  { type: 'x6',  label: 'Caja x6',  emoji: '🎁', price: 220, desc: '6 galletas a tu elección',          count: 6,  boxSize: 'x6'  },
+  { type: 'x12', label: 'Caja x12', emoji: '📦', price: 420, desc: '12 galletas — el regalo perfecto',   count: 12, boxSize: 'x12' },
+  { type: 'surprise', label: 'Caja x24', emoji: '🎀', price: 780, desc: '24 galletas para celebrar',     count: 24, boxSize: 'x24' },
+  { type: 'individual', label: 'Sorpresa',  emoji: '✨', price: 180, desc: 'Nosotros elegimos lo mejor', count: 0,  boxSize: 'x6'  },
 ]
 
 const BOX_COLORS = [
@@ -69,7 +69,12 @@ export default function CajasPage() {
         {/* Vista 3D de la caja */}
         <div className="md:sticky md:top-24">
           <div className="bg-gradient-to-b from-cafe to-cafe-medio rounded-3xl p-4 md:p-6">
-            <BoxScene interactive />
+            <BoxScene
+              boxSize={boxOption.boxSize}
+              boxColor={boxColor}
+              ribbonColor={hasRibbon ? ribbonColor : '#888888'}
+              label={message ? message.slice(0, 22) : boxOption.label}
+            />
             <div className="mt-4 text-center">
               <p className="font-display text-2xl font-bold text-dorado">{formatPrice(boxOption.price)}</p>
               <p className="text-crema/60 text-xs">{boxOption.desc}</p>

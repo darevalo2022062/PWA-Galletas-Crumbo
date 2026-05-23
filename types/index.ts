@@ -2,7 +2,7 @@ export type OrderStatus = 'received' | 'preparing' | 'ready' | 'delivered'
 export type DeliveryType = 'delivery' | 'pickup'
 export type CustomizationType = 'flavor' | 'filling' | 'topping' | 'presentation'
 export type PaymentMethod = 'cod' | 'card'
-export type BoxType = 'individual' | 'x6' | 'x12' | 'surprise'
+export type BoxType = 'individual' | 'x6' | 'x12' | 'x24' | 'surprise'
 
 export interface Category {
   id: string
