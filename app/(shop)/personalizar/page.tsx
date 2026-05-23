@@ -9,11 +9,10 @@ import type { CartCustomization } from '@/types'
 
 const CookieScene = dynamic(() => import('@/components/3d/CookieScene'), {
   ssr: false,
-  loading: () => <div className="w-full h-64 bg-gris-suave rounded-3xl animate-pulse" />,
+  loading: () => <div className="w-20 h-20 bg-gris-suave rounded-full animate-pulse" />,
 })
 
 const BASE_PRODUCT = { id: 'custom-cookie', name: 'Galleta Personalizada', base_price: 38, category_id: 'custom', image_url: null, active: true, is_daily_special: false, stock_limit: null, description: null }
-const DELIVERY_FEE = 20
 const MIN_COOKIES = 6
 
 const OPTIONS = {
@@ -45,36 +44,36 @@ const OPTIONS = {
 type OptionKey = keyof typeof OPTIONS
 
 const STEP_LABELS: { key: OptionKey; label: string; emoji: string }[] = [
-  { key: 'flavor', label: 'Sabor', emoji: '🍫' },
-  { key: 'filling', label: 'Relleno', emoji: '🎁' },
-  { key: 'topping', label: 'Topping', emoji: '✨' },
-  { key: 'presentation', label: 'Presentación', emoji: '🎀' },
+  { key: 'flavor',       label: 'Sabor',        emoji: '🍫' },
+  { key: 'filling',      label: 'Relleno',       emoji: '🎁' },
+  { key: 'topping',      label: 'Topping',       emoji: '✨' },
+  { key: 'presentation', label: 'Presentación',  emoji: '🎀' },
 ]
 
 export default function PersonalizarPage() {
-  const router = useRouter()
+  const router  = useRouter()
   const addItem = useCartStore((s) => s.addItem)
 
-  const [step, setStep] = useState(0)
-  const [selected, setSelected] = useState<Record<OptionKey, string>>({
+  const [step,       setStep]       = useState(0)
+  const [selected,   setSelected]   = useState<Record<OptionKey, string>>({
     flavor: 'f1', filling: 'fi1', topping: 't1', presentation: 'p1',
   })
-  const [quantity, setQuantity] = useState(MIN_COOKIES)
+  const [quantity,   setQuantity]   = useState(MIN_COOKIES)
   const [dedication, setDedication] = useState('')
-  const [added, setAdded] = useState(false)
+  const [added,      setAdded]      = useState(false)
 
-  const currentStep = STEP_LABELS[step]
+  const currentStep   = STEP_LABELS[step]
   const currentOptions = OPTIONS[currentStep.key]
 
-  const selectedFlavor = OPTIONS.flavor.find((o) => o.id === selected.flavor)
+  const selectedFlavor  = OPTIONS.flavor.find((o) => o.id === selected.flavor)
   const selectedTopping = OPTIONS.topping.find((o) => o.id === selected.topping)
 
   const extraTotal = Object.entries(selected).reduce((sum, [key, id]) => {
     const option = OPTIONS[key as OptionKey].find((o) => o.id === id)
-    return sum + (option?.extra_price || 0)
+    return sum + (option?.extra_price ?? 0)
   }, 0)
 
-  const unitPrice = BASE_PRODUCT.base_price + extraTotal
+  const unitPrice  = BASE_PRODUCT.base_price + extraTotal
   const totalPrice = unitPrice * quantity
 
   function getCustomizations(): CartCustomization[] {
@@ -91,30 +90,63 @@ export default function PersonalizarPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-2xl md:text-3xl font-bold text-cafe mb-1">Crear mi galleta 🎨</h1>
-        <p className="text-cafe-medio text-sm mb-6">Mínimo {MIN_COOKIES} galletas para pedido personalizado</p>
-      </motion.div>
+    <div className="max-w-6xl mx-auto px-4 py-4 pb-28">
 
-      <div className="grid md:grid-cols-2 gap-6 items-start">
-        {/* Vista 3D */}
+      {/* ── Header ── */}
+      <div className="mb-4">
+        <h1 className="font-display text-xl font-bold text-cafe leading-tight">Crear mi galleta 🎨</h1>
+        <p className="text-cafe-medio text-xs">Mínimo {MIN_COOKIES} galletas · personalización única</p>
+      </div>
+
+      {/* ══════════════════════════════════════════
+          MOBILE: columna única  |  DESKTOP: 2 cols
+      ══════════════════════════════════════════ */}
+      <div className="flex flex-col md:grid md:grid-cols-2 md:gap-6 md:items-start gap-4">
+
+        {/* ── Vista previa — compacta en mobile ── */}
         <div className="md:sticky md:top-24">
-          <div className="bg-gradient-to-b from-cafe to-cafe-medio rounded-3xl p-4 md:p-6">
-            <CookieScene
-              cookieColor={selectedFlavor?.color}
-              toppingColor={selectedTopping?.color}
-              chipColor={selectedTopping?.color}
-              size="lg"
-            />
-            <div className="mt-4 text-center">
-              <p className="font-display text-2xl font-bold text-dorado">{formatPrice(unitPrice)}</p>
-              <p className="text-crema/60 text-xs">por galleta · total: {formatPrice(totalPrice)}</p>
+          <div className="bg-gradient-to-b from-cafe to-cafe-medio rounded-2xl p-3 md:p-6 flex items-center gap-4 md:flex-col md:gap-0">
+            {/* Galleta pequeña en mobile, grande en desktop */}
+            <div className="shrink-0 md:w-full">
+              <CookieScene
+                cookieColor={selectedFlavor?.color}
+                toppingColor={selectedTopping?.color}
+                chipColor={selectedTopping?.color}
+                size="sm"
+                className="md:hidden"
+                animate={false}
+              />
+              <CookieScene
+                cookieColor={selectedFlavor?.color}
+                toppingColor={selectedTopping?.color}
+                chipColor={selectedTopping?.color}
+                size="lg"
+                className="hidden md:flex"
+              />
+            </div>
+
+            {/* Precio + resumen al lado en mobile */}
+            <div className="flex-1 md:mt-4 md:text-center md:w-full">
+              <p className="font-display text-xl md:text-2xl font-bold text-dorado">{formatPrice(unitPrice)}</p>
+              <p className="text-crema/60 text-xs">por galleta · total {formatPrice(totalPrice)}</p>
+
+              {/* Resumen selección — solo visible en mobile aquí, en desktop abajo */}
+              <div className="mt-2 space-y-0.5 md:hidden">
+                {STEP_LABELS.map(({ key, label, emoji }) => {
+                  const opt = OPTIONS[key].find((o) => o.id === selected[key])
+                  return (
+                    <div key={key} className="flex items-center justify-between text-xs">
+                      <span className="text-crema/50">{emoji} {label}</span>
+                      <span className="text-crema/80 font-medium truncate ml-2 max-w-[120px]">{opt?.label}</span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Resumen de selección */}
-          <div className="mt-4 bg-gris-suave rounded-2xl p-4 space-y-2">
+          {/* Resumen desktop (debajo de la galleta) */}
+          <div className="hidden md:block mt-4 bg-gris-suave rounded-2xl p-4 space-y-2">
             {STEP_LABELS.map(({ key, label, emoji }) => {
               const opt = OPTIONS[key].find((o) => o.id === selected[key])
               return (
@@ -130,15 +162,15 @@ export default function PersonalizarPage() {
           </div>
         </div>
 
-        {/* Panel de opciones */}
+        {/* ── Panel de opciones ── */}
         <div>
-          {/* Tabs de pasos */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+          {/* Tabs de pasos — scroll horizontal */}
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar">
             {STEP_LABELS.map(({ key, label, emoji }, i) => (
               <button
                 key={key}
                 onClick={() => setStep(i)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
                   step === i ? 'bg-cafe text-crema' : 'bg-gris-suave text-cafe-medio hover:bg-dorado/10'
                 }`}
               >
@@ -147,97 +179,96 @@ export default function PersonalizarPage() {
             ))}
           </div>
 
+          {/* Opciones — 2 columnas compactas */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep.key}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="grid grid-cols-2 gap-3 mb-6"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.18 }}
+              className="grid grid-cols-2 gap-2 mb-4"
             >
               {currentOptions.map((opt) => (
-                <motion.button
+                <button
                   key={opt.id}
                   onClick={() => setSelected((s) => ({ ...s, [currentStep.key]: opt.id }))}
-                  whileTap={{ scale: 0.97 }}
-                  className={`p-4 rounded-2xl text-left border-2 transition-all ${
+                  className={`p-3 rounded-xl text-left border-2 transition-all ${
                     selected[currentStep.key] === opt.id
                       ? 'border-cafe bg-cafe/5'
                       : 'border-transparent bg-gris-suave hover:border-dorado/40'
                   }`}
                 >
-                  <div
-                    className="w-8 h-8 rounded-xl mb-2 shadow-sm border border-black/5"
-                    style={{ backgroundColor: opt.color }}
-                  />
-                  <p className="font-medium text-cafe text-sm">{opt.label}</p>
-                  {opt.extra_price > 0 ? (
-                    <p className="text-dorado text-xs font-medium">+{formatPrice(opt.extra_price)}</p>
-                  ) : (
-                    <p className="text-cafe-medio text-xs">Incluido</p>
-                  )}
-                </motion.button>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-5 h-5 rounded-lg shrink-0 border border-black/5"
+                      style={{ backgroundColor: opt.color }} />
+                    <p className="font-medium text-cafe text-xs leading-tight">{opt.label}</p>
+                  </div>
+                  {opt.extra_price > 0
+                    ? <p className="text-dorado text-xs font-medium">+{formatPrice(opt.extra_price)}</p>
+                    : <p className="text-cafe-medio text-xs">Incluido</p>}
+                </button>
               ))}
             </motion.div>
           </AnimatePresence>
 
-          {/* Navegación entre pasos */}
-          <div className="flex gap-2 mb-6">
+          {/* Navegación pasos */}
+          <div className="flex gap-2 mb-4">
             {step > 0 && (
               <button onClick={() => setStep(step - 1)}
-                className="px-4 py-2 rounded-full border-2 border-cafe text-cafe text-sm font-medium">
+                className="px-3 py-1.5 rounded-full border-2 border-cafe text-cafe text-xs font-medium">
                 ← Anterior
               </button>
             )}
             {step < STEP_LABELS.length - 1 && (
               <button onClick={() => setStep(step + 1)}
-                className="px-4 py-2 rounded-full bg-cafe text-crema text-sm font-medium ml-auto">
+                className="px-3 py-1.5 rounded-full bg-cafe text-crema text-xs font-medium ml-auto">
                 Siguiente →
               </button>
             )}
           </div>
 
           {/* Cantidad */}
-          <div className="bg-gris-suave rounded-2xl p-4 mb-4">
-            <p className="font-medium text-cafe mb-3">Cantidad de galletas</p>
-            <div className="flex items-center gap-4">
+          <div className="bg-gris-suave rounded-xl p-3 mb-3 flex items-center justify-between">
+            <div>
+              <p className="font-medium text-cafe text-sm">Cantidad</p>
+              <p className="text-cafe-medio text-xs">Mínimo {MIN_COOKIES}</p>
+            </div>
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => setQuantity(Math.max(MIN_COOKIES, quantity - 1))}
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-cafe font-bold shadow-sm hover:bg-dorado hover:text-crema transition-colors"
-              >
-                −
-              </button>
-              <span className="font-display text-2xl font-bold text-cafe w-8 text-center">{quantity}</span>
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-cafe font-bold shadow-sm hover:bg-dorado hover:text-crema transition-colors text-lg"
+              >−</button>
+              <span className="font-display text-xl font-bold text-cafe w-6 text-center">{quantity}</span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-cafe font-bold shadow-sm hover:bg-dorado hover:text-crema transition-colors"
-              >
-                +
-              </button>
-              <span className="text-xs text-cafe-medio ml-2">Mínimo {MIN_COOKIES}</span>
+                className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-cafe font-bold shadow-sm hover:bg-dorado hover:text-crema transition-colors text-lg"
+              >+</button>
             </div>
           </div>
 
           {/* Dedicatoria */}
-          <div className="bg-gris-suave rounded-2xl p-4 mb-6">
-            <p className="font-medium text-cafe mb-2">Mensaje o dedicatoria <span className="text-cafe-medio font-normal text-sm">(opcional)</span></p>
+          <div className="bg-gris-suave rounded-xl p-3 mb-4">
+            <p className="font-medium text-cafe text-sm mb-1.5">
+              Mensaje <span className="text-cafe-medio font-normal text-xs">(opcional)</span>
+            </p>
             <textarea
               value={dedication}
               onChange={(e) => setDedication(e.target.value)}
               placeholder="Ej: ¡Feliz cumpleaños amor! 🎂"
-              className="w-full bg-white rounded-xl px-3 py-2.5 text-cafe text-sm outline-none resize-none border border-dorado/10 focus:border-dorado/40"
+              className="w-full bg-white rounded-lg px-3 py-2 text-cafe text-sm outline-none resize-none border border-dorado/10 focus:border-dorado/40"
               rows={2}
               maxLength={100}
             />
-            <p className="text-xs text-cafe-medio text-right mt-1">{dedication.length}/100</p>
+            <p className="text-xs text-cafe-medio text-right">{dedication.length}/100</p>
           </div>
 
-          {/* Agregar al carrito */}
+          {/* CTA */}
           <motion.button
             onClick={handleAdd}
             disabled={added}
             whileTap={{ scale: 0.98 }}
-            className={`w-full py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
+            className={`w-full py-3.5 rounded-2xl font-bold text-base transition-all shadow-lg ${
               added ? 'bg-green-500 text-white' : 'bg-cafe text-crema hover:bg-cafe-medio'
             }`}
           >

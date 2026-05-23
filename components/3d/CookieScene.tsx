@@ -8,6 +8,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
   interactive?: boolean
   animate?: boolean
+  className?: string
 }
 
 const sizeMap = { sm: 120, md: 200, lg: 260 }
@@ -18,9 +19,10 @@ export default function CookieScene({
   chipColor = '#3B1A08',
   size = 'lg',
   animate = true,
+  className = '',
 }: Props) {
   return (
-    <div className="w-full flex items-center justify-center py-4">
+    <div className={`w-full flex items-center justify-center py-2 ${className}`}>
       <CookieIllustration
         baseColor={cookieColor}
         frostingColor={toppingColor ?? '#F5CBA7'}
